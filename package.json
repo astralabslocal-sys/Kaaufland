@@ -1,0 +1,12 @@
+{
+  "name": "taubenhilfe-dinslaken",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Website der Bürgerinitiative Taubenhilfe Dinslaken",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
