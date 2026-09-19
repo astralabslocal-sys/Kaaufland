@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Team-Login – Taubenhilfe Dinslaken</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Team-Login</h1>
+      <p class="sub">Nur für Mitarbeiter der Taubenhilfe Dinslaken.</p>
+      <% if (error) { %><div class="auth-error"><%= error %></div><% } %>
+      <form method="POST" action="/login">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <label for="email">E-Mail</label>
+        <input type="email" id="email" name="email" required autofocus>
+        <label for="password">Passwort</label>
+        <div class="password-field">
+          <input type="password" id="password" name="password" required>
+          <button type="button" class="password-toggle" id="passwordToggle" aria-label="Passwort anzeigen" aria-pressed="false">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <g class="eye-open"><path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3"/></g>
+              <path class="eye-closed" style="display:none" d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.88 5.09A10.6 10.6 0 0 1 12 5c7 0 10.5 7 10.5 7a13.5 13.5 0 0 1-3.15 4.05M6.5 6.5C3.6 8.3 1.5 12 1.5 12a13.5 13.5 0 0 0 4.15 4.9"/>
+            </svg>
+          </button>
+        </div>
+        <button type="submit" class="btn btn-primary">Einloggen</button>
+      </form>
+      <a href="/" class="auth-back">← Zurück zur Website</a>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var input = document.getElementById('password');
+      var toggle = document.getElementById('passwordToggle');
+      if (!input || !toggle) return;
+      toggle.addEventListener('click', function () {
+        var showing = input.type === 'text';
+        input.type = showing ? 'password' : 'text';
+        toggle.setAttribute('aria-pressed', String(!showing));
+        toggle.setAttribute('aria-label', showing ? 'Passwort anzeigen' : 'Passwort verbergen');
+        toggle.querySelector('.eye-open').style.display = showing ? '' : 'none';
+        toggle.querySelector('.eye-closed').style.display = showing ? 'none' : '';
+      });
+    })();
+  </script>
+</body>
+</html>

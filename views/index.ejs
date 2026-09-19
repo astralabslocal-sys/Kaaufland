@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Taubenhilfe Dinslaken</title>
+<meta name="description" content="Bürgerinitiative Taubenhilfe Dinslaken – für ein tierschutzgerechtes Stadttaubenmanagement." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div id="progress"></div>
+
+<header>
+  <div class="header-inner">
+    <div class="wordmark">
+      <a href="#top"><span class="name">Taubenhilfe Dinslaken</span></a>
+      <span class="tag">Bürgerinitiative · Stadttaubenmanagement</span>
+    </div>
+    <div class="header-right">
+      <img class="logo-crest" src="/assets/logo.png" alt="Taubenfamilie – Wappen der Taubenhilfe Dinslaken" />
+      <button class="burger" id="burgerBtn" aria-expanded="false" aria-controls="drawer" aria-label="Menü öffnen">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="backdrop" id="backdrop"></div>
+<nav class="drawer" id="drawer" aria-label="Hauptnavigation">
+  <div class="drawer-head">
+    <span class="eyebrow">Inhalt</span>
+    <button class="drawer-close" id="drawerClose" aria-label="Menü schließen">×</button>
+  </div>
+  <ul class="drawer-list">
+    <li><a href="#top" class="dlink"><span class="num">—</span>Startseite</a></li>
+    <li><a href="#sec-1" class="dlink"><span class="num">01</span>Warum braucht es uns?</a></li>
+    <li><a href="#sec-2" class="dlink"><span class="num">02</span>Woher kommen Stadttauben?</a></li>
+    <li><a href="#sec-3" class="dlink"><span class="num">03</span>Der „Brutzwang"</a></li>
+    <li><a href="#sec-4" class="dlink"><span class="num">04</span>Das Taubenhaus</a></li>
+    <li><a href="#sec-5" class="dlink"><span class="num">05</span>Der Eiertausch</a></li>
+    <li><a href="#sec-6" class="dlink"><span class="num">06</span>Unser Gesamtkonzept</a></li>
+    <li><a href="#sec-7" class="dlink"><span class="num">07</span>Die Stadt gewinnen</a></li>
+    <li><a href="#sec-8" class="dlink"><span class="num">08</span>Die Bürgerinitiative</a></li>
+    <li><a href="#sec-9" class="dlink"><span class="num">09</span>Forderungen an die Stadt</a></li>
+    <li><a href="#sec-10" class="dlink"><span class="num">10</span>Was kann ich tun?</a></li>
+    <li><a href="#sec-12" class="dlink"><span class="num">12</span>FAQ</a></li>
+    <li><a href="#sec-13" class="dlink"><span class="num">13</span>Unsere Quellen</a></li>
+    <li><a href="#gaestebuch" class="dlink"><span class="num">→</span>Gästebuch</a></li>
+    <li class="contact-item"><a href="#kontakt" class="dlink"><span class="num">→</span>Kontakt</a></li>
+  </ul>
+</nav>
+
+<main id="top">
+
+  <section class="hero">
+    <span class="eyebrow">Bürgerinitiative · Dinslaken</span>
+    <h1>Taubenschutz statt Taubenproblem.</h1>
+    <p class="sub">Für eine saubere Stadt. Für gesunde Tauben. Für ein respektvolles Miteinander.</p>
+    <%- content.hero_body %>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#sec-8">Jetzt mitmachen</a>
+      <a class="btn btn-ghost" href="#sec-6">Unser Konzept kennenlernen</a>
+      <a class="btn btn-ghost" href="#sec-10">Taubenschutz unterstützen</a>
+    </div>
+  </section>
+
+  <section class="chapter" id="sec-1">
+    <div class="chapter-head"><span class="chapter-num">01</span><h2>Warum braucht es uns?</h2></div>
+    <div class="chapter-body"><%- content.sec1_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-2">
+    <div class="chapter-head"><span class="chapter-num">02</span><h2>Woher kommen Stadttauben eigentlich her?</h2></div>
+    <div class="chapter-body"><%- content.sec2_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-3">
+    <div class="chapter-head"><span class="chapter-num">03</span><h2>Der „Brutzwang"</h2></div>
+    <div class="chapter-body"><%- content.sec3_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-4">
+    <div class="chapter-head"><span class="chapter-num">04</span><h2>Das Taubenhaus</h2></div>
+    <div class="chapter-body"><%- content.sec4_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-5">
+    <div class="chapter-head"><span class="chapter-num">05</span><h2>Der Eiertausch</h2></div>
+    <div class="chapter-body"><%- content.sec5_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-6">
+    <div class="chapter-head"><span class="chapter-num">06</span><h2>Unser Gesamtkonzept</h2></div>
+    <div class="chapter-body"><%- content.sec6_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-7">
+    <div class="chapter-head"><span class="chapter-num">07</span><h2>Unser Ziel: die Stadt gewinnen</h2></div>
+    <div class="chapter-body"><%- content.sec7_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-8">
+    <div class="chapter-head"><span class="chapter-num">08</span><h2>Jetzt kommt die Bürgerinitiative</h2></div>
+    <div class="chapter-body"><%- content.sec8_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-9">
+    <div class="chapter-head"><span class="chapter-num">09</span><h2>Was wir von der Stadt fordern</h2></div>
+    <div class="chapter-body"><%- content.sec9_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-10">
+    <div class="chapter-head"><span class="chapter-num">10</span><h2>Was kann ich tun?</h2></div>
+    <div class="chapter-body"><%- content.sec10_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-12">
+    <div class="chapter-head"><span class="chapter-num">12</span><h2>Häufige Fragen</h2></div>
+    <div class="chapter-body"><%- content.sec12_body %></div>
+  </section>
+
+  <section class="chapter" id="sec-13">
+    <div class="chapter-head"><span class="chapter-num">13</span><h2>Unsere Quellen</h2></div>
+    <div class="chapter-body"><%- content.sec13_body %></div>
+  </section>
+
+  <section id="kontakt">
+    <span class="eyebrow">Kontakt</span>
+    <h2>Sprich mit uns.</h2>
+    <p><%- content.kontakt_body %></p>
+    <a class="btn-mail" href="mailto:taubenhilfedinslaken@gmail.com">✉ E-Mail schreiben</a>
+    <div class="domain">taubenhilfedinslaken.com</div>
+    <p>Bürgerinitiative Taubenhilfe Dinslaken</p>
+  </section>
+
+  <section id="gaestebuch">
+    <span class="eyebrow">Gästebuch</span>
+    <h2>Was andere sagen.</h2>
+    <p>Hinterlasse uns eine Nachricht – mit Namen oder anonym.</p>
+
+    <form method="POST" action="/gaestebuch" class="guestbook-form">
+      <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <input type="text" name="name" placeholder="Dein Name (optional)" maxlength="80" />
+      <textarea name="body" placeholder="Deine Nachricht" maxlength="1000" required rows="3"></textarea>
+      <button type="submit" class="btn btn-primary">Nachricht senden</button>
+    </form>
+
+    <div class="guestbook-list">
+      <% messages.forEach(function(m) { %>
+        <div class="guestbook-item">
+          <div class="guestbook-meta">
+            <strong><%= m.name || 'Anonym' %></strong>
+            <span><%= formatDate(m.created_at) %></span>
+          </div>
+          <p><%= m.body %></p>
+        </div>
+      <% }) %>
+      <% if (!messages.length) { %>
+        <p class="guestbook-empty">Noch keine Nachrichten. Sei die/der Erste!</p>
+      <% } %>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>© 2026 Bürgerinitiative Taubenhilfe Dinslaken</span>
+  <span>
+    <a href="#top">Nach oben ↑</a> ·
+    <% if (currentUser) { %>
+      <a href="/admin">Admin-Bereich</a>
+    <% } else { %>
+      <a href="/login">Team-Login</a>
+    <% } %>
+  </span>
+</footer>
+
+<script>
+  (function(){
+    var burger = document.getElementById('burgerBtn');
+    var drawer = document.getElementById('drawer');
+    var backdrop = document.getElementById('backdrop');
+    var closeBtn = document.getElementById('drawerClose');
+    var links = document.querySelectorAll('.dlink');
+
+    function openDrawer(){
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+      burger.setAttribute('aria-expanded','true');
+    }
+    function closeDrawer(){
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+      burger.setAttribute('aria-expanded','false');
+    }
+    burger.addEventListener('click', function(){
+      drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+    });
+    closeBtn.addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeDrawer();
+    });
+    links.forEach(function(a){ a.addEventListener('click', closeDrawer); });
+
+    var bar = document.getElementById('progress');
+    function updateProgress(){
+      var h = document.documentElement;
+      var scrollable = h.scrollHeight - h.clientHeight;
+      var pct = scrollable > 0 ? (h.scrollTop / scrollable) * 100 : 0;
+      bar.style.width = pct + '%';
+    }
+    document.addEventListener('scroll', updateProgress, {passive:true});
+    updateProgress();
+  })();
+</script>
+
+</body>
+</html>

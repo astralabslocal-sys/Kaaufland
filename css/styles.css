@@ -2,7 +2,7 @@
    Taubenhilfe Dinslaken — styles.css
    Struktur: Tokens -> Basis -> Header/Menü -> Layout ->
              Startseite -> Kapitel-Bausteine -> FAQ ->
-             Quellen -> Kontakt -> Footer -> Responsive
+             Quellen -> Kontakt -> Gästebuch -> Footer -> Responsive
    ======================================================= */
 
 /* ---------- Farb- und Abstands-Tokens ---------- */
@@ -121,7 +121,7 @@ header{
 .wordmark .tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);}
 .header-right{display:flex;align-items:center;gap:.75rem;}
 .logo-crest{
-  width:42px;height:42px;border-radius:50%;
+  width:48px;height:48px;border-radius:50%;
   object-fit:cover;
   border:1px solid var(--teal-line);
   box-shadow:var(--shadow);
@@ -366,6 +366,36 @@ section{scroll-margin-top:76px;}
   font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;
   display:inline-block;margin:1rem 0 .2rem;color:color-mix(in srgb, var(--paper) 82%, transparent);
 }
+
+/* ---------- Gästebuch ---------- */
+#gaestebuch{padding:2.6rem 0;border-top:1px solid var(--line);}
+.guestbook-form{
+  display:grid;gap:.7rem;margin:1.4rem 0 2rem;
+  background:var(--paper-raised);border:1px solid var(--line);border-radius:12px;
+  padding:1.2rem;
+}
+.guestbook-form .hp-field{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
+.guestbook-form input[type="text"],
+.guestbook-form textarea{
+  font:inherit;color:var(--ink);background:var(--paper);
+  border:1px solid var(--line);border-radius:8px;padding:.7rem .85rem;resize:vertical;
+}
+.guestbook-form input[type="text"]:focus,
+.guestbook-form textarea:focus{border-color:var(--teal);}
+.guestbook-form button{justify-self:start;}
+.guestbook-list{display:grid;gap:.9rem;}
+.guestbook-item{
+  background:var(--paper-raised);border:1px solid var(--line);border-radius:12px;
+  padding:1rem 1.1rem;
+}
+.guestbook-meta{
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-faint);
+  margin-bottom:.4rem;
+}
+.guestbook-meta strong{font-family:'Public Sans',sans-serif;color:var(--teal-deep);font-size:.85rem;}
+.guestbook-item p{color:var(--ink);font-size:.95rem;white-space:pre-wrap;margin:0;}
+.guestbook-empty{color:var(--ink-faint);font-style:italic;}
 
 /* ---------- Footer ---------- */
 footer{

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin – Taubenhilfe Dinslaken</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-wrap">
+
+  <div class="admin-topbar">
+    <div>
+      <h1>Admin-Bereich</h1>
+      <div class="admin-whoami">
+        Eingeloggt als <strong><%= user.name %></strong> (<%= user.email %>)
+        <span class="role-badge"><%= roleLabels[user.role] %></span>
+      </div>
+    </div>
+    <div class="row-actions">
+      <a href="/" class="btn btn-ghost">← Zur Website</a>
+      <form method="POST" action="/logout" class="inline-form">
+        <button type="submit" class="btn btn-ghost">Logout</button>
+      </form>
+    </div>
+  </div>
+
+  <% if (notice) { %><div class="admin-notice"><%= notice %></div><% } %>
+  <% if (error) { %><div class="admin-error"><%= error %></div><% } %>
+
+  <% if (perms.canEditContent(user.role)) { %>
+  <div class="admin-section">
+    <h2>Texte der Seite bearbeiten</h2>
+    <p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:1rem;">
+      Änderungen erscheinen sofort live auf der Website. Einfaches HTML (z.B. &lt;p&gt;, &lt;strong&gt;) ist erlaubt.
+    </p>
+    <% contentBlocks.forEach(function(block) { %>
+      <details class="content-item">
+        <summary>
+          <span><%= contentLabels[block.key] || block.key %></span>
+          <span class="meta">zuletzt geändert: <%= formatDate(block.updated_at) %></span>
+        </summary>
+        <form method="POST" action="/admin/content/<%= block.key %>">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <textarea name="html"><%= block.html %></textarea>
+          <button type="submit" class="btn btn-primary">Speichern</button>
+        </form>
+      </details>
+    <% }) %>
+  </div>
+  <% } %>
+
+  <div class="admin-section">
+    <h2>Gästebuch moderieren</h2>
+    <% if (!messages.length) { %>
+      <p style="color:var(--ink-faint);">Noch keine Nachrichten.</p>
+    <% } %>
+    <% messages.forEach(function(m) { %>
+      <div class="msg-card">
+        <div class="msg-meta">
+          <%= m.name || 'Anonym' %> · <%= formatDate(m.created_at) %>
+        </div>
+        <form method="POST" action="/admin/messages/<%= m.id %>/edit">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <textarea name="body"><%= m.body %></textarea>
+          <div class="row-actions">
+            <button type="submit" class="btn-small">Änderung speichern</button>
+          </div>
+        </form>
+        <form method="POST" action="/admin/messages/<%= m.id %>/delete" class="inline-form" onsubmit="return confirm('Nachricht wirklich löschen?');">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="btn-small danger" style="margin-top:.5rem;">Löschen</button>
+        </form>
+      </div>
+    <% }) %>
+  </div>
+
+  <% if (perms.canCreateUsers(user.role)) { %>
+  <div class="admin-section">
+    <h2>Mitarbeiter einstellen</h2>
+    <p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:1rem;">
+      Legt einen neuen Zugang an und verschickt automatisch eine E-Mail mit den Zugangsdaten.
+    </p>
+    <form method="POST" action="/admin/users" class="new-user-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div>
+        <label for="new-name">Name</label>
+        <input type="text" id="new-name" name="name" required>
+      </div>
+      <div>
+        <label for="new-email">E-Mail</label>
+        <input type="email" id="new-email" name="email" required>
+      </div>
+      <div>
+        <label for="new-role">Rolle</label>
+        <select id="new-role" name="role" required>
+          <option value="teamler">Teamler</option>
+          <option value="supporter">Supporter</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Zugang anlegen &amp; E-Mail senden</button>
+    </form>
+  </div>
+  <% } %>
+
+  <% if (users) { %>
+  <div class="admin-section">
+    <h2>Team</h2>
+    <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr><th>Name</th><th>E-Mail</th><th>Rolle</th><th>Status</th><% if (perms.canManageUsers(user.role)) { %><th>Aktionen</th><% } %></tr>
+      </thead>
+      <tbody>
+        <% users.forEach(function(u) { %>
+          <tr>
+            <td><%= u.name %></td>
+            <td><%= u.email %></td>
+            <td><span class="tag"><%= roleLabels[u.role] %></span></td>
+            <td>
+              <% if (u.active) { %><span class="tag">aktiv</span><% } else { %><span class="tag inactive">gekündigt</span><% } %>
+              <% if (u.must_change_password) { %><span class="tag">Erstlogin ausstehend</span><% } %>
+            </td>
+            <% if (perms.canManageUsers(user.role)) { %>
+              <td>
+                <% if (u.id !== user.id) { %>
+                  <div class="row-actions">
+                    <form method="POST" action="/admin/users/<%= u.id %>/role" class="inline-form">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <select name="role" onchange="this.form.submit()">
+                        <% ['owner','admin','supporter','teamler'].forEach(function(r) { %>
+                          <option value="<%= r %>" <%= r === u.role ? 'selected' : '' %>><%= roleLabels[r] %></option>
+                        <% }) %>
+                      </select>
+                    </form>
+                    <form method="POST" action="/admin/users/<%= u.id %>/toggle-active" class="inline-form" onsubmit="return confirm('<%= u.active ? 'Zugang wirklich entziehen (kündigen)?' : 'Zugang wirklich wieder aktivieren?' %>');">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <button type="submit" class="btn-small <%= u.active ? 'danger' : '' %>"><%= u.active ? 'Kündigen' : 'Reaktivieren' %></button>
+                    </form>
+                  </div>
+                <% } else { %>
+                  <span style="color:var(--ink-faint);font-size:.8rem;">(du selbst)</span>
+                <% } %>
+              </td>
+            <% } %>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <% } %>
+
+</div>
+</body>
+</html>
