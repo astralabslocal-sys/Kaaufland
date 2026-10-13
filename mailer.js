@@ -49,4 +49,33 @@ async function sendWelcomeEmail({ to, name, email, password, loginUrl }) {
   });
 }
 
-module.exports = { sendWelcomeEmail };
+async function sendPasswordResetEmail({ to, name, email, password, loginUrl }) {
+  const transporter = getTransporter();
+  if (!transporter) {
+    const err = new Error('E-Mail-Versand ist nicht konfiguriert (GMAIL_USER/GMAIL_APP_PASSWORD fehlen).');
+    err.code = 'MAIL_NOT_CONFIGURED';
+    throw err;
+  }
+
+  await transporter.sendMail({
+    from: `"Taubenhilfe Dinslaken" <${process.env.GMAIL_USER}>`,
+    to,
+    subject: 'Dein Passwort wurde zurückgesetzt',
+    text: [
+      `Hallo ${name},`,
+      '',
+      'dein Passwort für die Verwaltung der Taubenhilfe-Dinslaken-Website wurde zurückgesetzt.',
+      '',
+      `Login-Seite: ${loginUrl}`,
+      `E-Mail: ${email}`,
+      `Neues Passwort: ${password}`,
+      '',
+      'Beim nächsten Login musst du dir ein eigenes Passwort vergeben.',
+      '',
+      'Viele Grüße',
+      'Taubenhilfe Dinslaken',
+    ].join('\n'),
+  });
+}
+
+module.exports = { sendWelcomeEmail, sendPasswordResetEmail };

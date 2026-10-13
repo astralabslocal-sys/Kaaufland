@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 const { pool, ROLE_LABELS, CONTENT_LABELS, initSchema } = require('./db');
 const perms = require('./permissions');
 const csrf = require('./csrf');
-const { sendWelcomeEmail } = require('./mailer');
+const { sendWelcomeEmail, sendPasswordResetEmail } = require('./mailer');
 
 const PgSession = pgSessionFactory(session);
 const PORT = process.env.PORT || 3000;
@@ -22,6 +22,7 @@ app.set('trust proxy', 1); // Railway sitzt hinter einem Proxy -> nötig für "s
 
 app.use(express.urlencoded({ extended: true }));
 app.use('/css', express.static(path.join(__dirname, 'css')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 app.use(session({
@@ -267,7 +268,7 @@ app.post('/admin/messages/:id/delete', requireAuth, requireRole(perms.canModerat
   }
 });
 
-// Mitarbeiter anlegen ("einstellen") - nur Admin
+// Mitarbeiter anlegen ("einstellen") - Admin und Owner
 app.post('/admin/users', requireAuth, requireRole(perms.canCreateUsers), csrf.verifyToken, async (req, res, next) => {
   try {
     const name = (req.body.name || '').trim();
@@ -306,6 +307,45 @@ app.post('/admin/users', requireAuth, requireRole(perms.canCreateUsers), csrf.ve
       res.redirect('/admin?notice=' + encodeURIComponent(
         `Mitarbeiter ${name} angelegt, aber die E-Mail konnte nicht verschickt werden. ` +
         `Bitte Zugangsdaten manuell weitergeben – E-Mail: ${email}, Passwort: ${tempPassword}`
+      ));
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Passwort eines Mitarbeiters zurücksetzen - Admin und Owner (nicht sich selbst,
+// dafür gibt es /change-password). Erzeugt ein neues Zufallspasswort und zwingt
+// die Person, es beim nächsten Login selbst zu ändern.
+app.post('/admin/users/:id/reset-password', requireAuth, requireRole(perms.canCreateUsers), csrf.verifyToken, async (req, res, next) => {
+  try {
+    const targetId = Number(req.params.id);
+    if (targetId === req.session.user.id) {
+      return res.redirect('/admin?error=' + encodeURIComponent('Dein eigenes Passwort änderst du unter „Passwort ändern", nicht hier.'));
+    }
+
+    const { rows } = await pool.query('SELECT id, name, email FROM users WHERE id = $1', [targetId]);
+    if (!rows[0]) {
+      return res.redirect('/admin?error=' + encodeURIComponent('Nutzer nicht gefunden.'));
+    }
+    const target = rows[0];
+
+    const tempPassword = require('crypto').randomBytes(9).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
+    const hash = await bcrypt.hash(tempPassword, 12);
+    await pool.query(
+      'UPDATE users SET password_hash = $1, must_change_password = true WHERE id = $2',
+      [hash, targetId]
+    );
+
+    const loginUrl = `${req.protocol}://${req.get('host')}/login`;
+    try {
+      await sendPasswordResetEmail({ to: target.email, name: target.name, email: target.email, password: tempPassword, loginUrl });
+      res.redirect('/admin?notice=' + encodeURIComponent(`Passwort für ${target.name} wurde zurückgesetzt, neue Zugangsdaten wurden per E-Mail verschickt.`));
+    } catch (mailErr) {
+      console.error('Mail-Versand fehlgeschlagen:', mailErr.message);
+      res.redirect('/admin?notice=' + encodeURIComponent(
+        `Passwort für ${target.name} wurde zurückgesetzt, aber die E-Mail konnte nicht verschickt werden. ` +
+        `Bitte Zugangsdaten manuell weitergeben – E-Mail: ${target.email}, Neues Passwort: ${tempPassword}`
       ));
     }
   } catch (err) {
