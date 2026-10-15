@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 const { pool, ROLE_LABELS, CONTENT_LABELS, initSchema } = require('./db');
 const perms = require('./permissions');
 const csrf = require('./csrf');
-const { sendWelcomeEmail, sendPasswordResetEmail } = require('./mailer');
+const { sendWelcomeEmail, sendPasswordResetEmail, sendPetitionNotification } = require('./mailer');
 
 const PgSession = pgSessionFactory(session);
 const PORT = process.env.PORT || 3000;
@@ -75,7 +75,8 @@ app.get('/', async (req, res, next) => {
       'SELECT id, name, body, created_at FROM messages ORDER BY created_at DESC LIMIT 100'
     );
 
-    res.render('index', { content, messages, formatDate, error: null });
+    const petitionStatus = ['danke', 'fehler'].includes(req.query.petition) ? req.query.petition : null;
+    res.render('index', { content, messages, formatDate, error: null, petitionStatus });
   } catch (err) {
     next(err);
   }
@@ -119,6 +120,68 @@ app.post('/gaestebuch', async (req, res, next) => {
     );
 
     res.redirect('/#gaestebuch');
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Petition "Ein Taubenhaus für Dinslaken" - öffentlich, kein Login nötig.
+// Gleicher Spam-Schutz wie beim Gästebuch (Honeypot + Mindestabstand pro IP),
+// eigene Map, damit ein Spammer nicht beide Formulare gleichzeitig blockiert.
+const lastPetitionByIp = new Map();
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PLZ_RE = /^\d{5}$/;
+
+app.post('/petition', async (req, res, next) => {
+  try {
+    const { vorname, nachname, email, plz, website } = req.body;
+
+    if (website) {
+      // Honeypot ausgefüllt -> vermutlich ein Bot. Trotzdem wie Erfolg aussehen lassen.
+      return res.redirect('/?petition=danke#sec-8');
+    }
+
+    const firstName = (vorname || '').trim().slice(0, 80);
+    const lastName = (nachname || '').trim().slice(0, 80);
+    const emailTrim = (email || '').trim().toLowerCase().slice(0, 200);
+    const plzTrim = (plz || '').trim().slice(0, 5);
+
+    if (!firstName || !lastName || !EMAIL_RE.test(emailTrim) || !PLZ_RE.test(plzTrim)) {
+      return res.redirect('/?petition=fehler#sec-8');
+    }
+
+    const ip = req.ip || 'unknown';
+    const now = Date.now();
+    const last = lastPetitionByIp.get(ip) || 0;
+    if (now - last < 5000) {
+      // Zu schnell hintereinander -> ignorieren, aber wie Erfolg aussehen lassen.
+      return res.redirect('/?petition=danke#sec-8');
+    }
+    lastPetitionByIp.set(ip, now);
+
+    try {
+      await pool.query(
+        'INSERT INTO petition_signatures (first_name, last_name, email, plz) VALUES ($1, $2, $3, $4)',
+        [firstName, lastName, emailTrim, plzTrim]
+      );
+    } catch (e) {
+      if (e.code === '23505') {
+        // Mit dieser E-Mail wurde schon unterschrieben - für den Unterzeichner
+        // trotzdem wie Erfolg behandeln (nicht verraten, dass es ein Duplikat ist).
+        return res.redirect('/?petition=danke#sec-8');
+      }
+      throw e;
+    }
+
+    try {
+      await sendPetitionNotification({ firstName, lastName, email: emailTrim, plz: plzTrim });
+    } catch (mailErr) {
+      // Unterschrift ist in jedem Fall gespeichert - ein fehlender Mailversand
+      // ist kein Fehler für die unterschreibende Person, nur fürs Vereins-Postfach.
+      console.error('Petitions-Mail fehlgeschlagen:', mailErr.message);
+    }
+
+    res.redirect('/?petition=danke#sec-8');
   } catch (err) {
     next(err);
   }

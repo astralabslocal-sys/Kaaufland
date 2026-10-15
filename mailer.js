@@ -17,6 +17,14 @@ function getTransporter() {
       user: process.env.GMAIL_USER.trim(),
       pass: appPassword,
     },
+    // Ohne diese Limits wartet nodemailer bei einer hängenden Verbindung (z.B.
+    // Netzwerkproblem beim Hoster) mehrere Minuten, bevor der Aufruf überhaupt
+    // fehlschlägt - und blockiert damit die komplette Admin-Anfrage so lange.
+    // Mit kurzen Timeouts schlägt der Versand schnell fehl, der bestehende
+    // Fallback (Zugangsdaten im Admin-Bereich anzeigen) greift dann zügig.
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
   });
 }
 
@@ -78,4 +86,29 @@ async function sendPasswordResetEmail({ to, name, email, password, loginUrl }) {
   });
 }
 
-module.exports = { sendWelcomeEmail, sendPasswordResetEmail };
+// Benachrichtigung an das Vereins-Postfach selbst, wenn jemand die Petition
+// "Ein Taubenhaus für Dinslaken" unterschreibt. Geht an GMAIL_USER, nicht an
+// die unterschreibende Person.
+async function sendPetitionNotification({ firstName, lastName, email, plz }) {
+  const transporter = getTransporter();
+  if (!transporter) {
+    const err = new Error('E-Mail-Versand ist nicht konfiguriert (GMAIL_USER/GMAIL_APP_PASSWORD fehlen).');
+    err.code = 'MAIL_NOT_CONFIGURED';
+    throw err;
+  }
+
+  await transporter.sendMail({
+    from: `"Taubenhilfe Dinslaken – Website" <${process.env.GMAIL_USER}>`,
+    to: process.env.GMAIL_USER,
+    subject: 'Neue Unterschrift: Ein Taubenhaus für Dinslaken',
+    text: [
+      'Jemand hat gerade die Petition "Ein Taubenhaus für Dinslaken" unterschrieben:',
+      '',
+      `Name: ${firstName} ${lastName}`,
+      `E-Mail: ${email}`,
+      `Postleitzahl: ${plz}`,
+    ].join('\n'),
+  });
+}
+
+module.exports = { sendWelcomeEmail, sendPasswordResetEmail, sendPetitionNotification };

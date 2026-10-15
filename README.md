@@ -5,6 +5,7 @@ Website der Bürgerinitiative Taubenhilfe Dinslaken. Seit Version 2.0 mit:
 - **Login-Bereich für Mitarbeiter** mit vier Rollen: Owner, Admin, Supporter, Teamler
 - **Bearbeitbare Texte**: Owner und Admin können jeden Textabschnitt der Seite direkt im Browser ändern, ohne Code
 - **Öffentliches Gästebuch** ganz unten auf der Seite – jeder Besucher kann (mit Namen oder anonym) schreiben, jeder eingeloggte Mitarbeiter kann Einträge moderieren
+- **Petition "Ein Taubenhaus für Dinslaken"**: Die Buttons "Jetzt unterschreiben" öffnen ein Fenster (Vorname, Nachname, E-Mail, Postleitzahl). Jede Unterschrift wird gespeichert und löst eine Benachrichtigung an `taubenhilfedinslaken@gmail.com` aus (nutzt dieselbe Gmail-Einrichtung wie die Zugangsdaten-Mails, siehe unten)
 
 ## Wer darf was?
 
@@ -93,6 +94,8 @@ views/admin.ejs          Admin-Dashboard (Texte, Gästebuch, Team – je nach Ro
 css/styles.css           Styles der öffentlichen Seite
 css/admin.css            Styles für Login/Admin-Bereich
 assets/logo.png          Logo im Header (freigestellt, transparenter Hintergrund)
+js/password-toggle.js    Auge-Icon zum Ein-/Ausblenden von Passwort-Eingaben (Login, Passwort ändern)
+js/petition-modal.js     Öffnet/schließt das Petitions-Fenster ("Jetzt unterschreiben")
 railway.json             Railway-Konfiguration (Nixpacks, Start-Kommando)
 test/smoke.js, test/smoke_http.js   Automatisierte Tests (pg-mem statt echtem Postgres),
                                      nicht für den Produktivbetrieb nötig

@@ -167,11 +167,9 @@ const DEFAULT_CONTENT = {
       <p>Wir möchten Unterstützer gewinnen und gemeinsam mit ihnen eine Petition bzw. Unterschriftenaktion starten.</p>
       <p class="pullquote">Die Stadt soll sich mit einem tierschutzgerechten Stadttaubenmanagement auseinandersetzen und die Voraussetzungen für ein betreutes Taubenhaus prüfen.</p>
       <p>Je mehr Menschen unsere Forderung unterstützen, desto deutlicher wird: Das Thema betrifft unsere Stadt – und die Bürgerinnen und Bürger wünschen sich eine nachhaltige Lösung.</p>
-      <p style="font-size:.88rem;color:var(--ink-faint)">Unsere Unterschriften- und Mitgliederaktion befindet sich gerade im Aufbau. Melde dich über den Kontakt weiter unten – wir tragen dich von Hand in die Liste ein.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#kontakt">Jetzt unterschreiben</a>
-        <a class="btn btn-ghost" href="#kontakt">Unterstützer werden</a>
-        <a class="btn btn-ghost" href="#kontakt">Mitglied werden</a>
+        <button type="button" class="btn btn-primary open-petition">Jetzt unterschreiben</button>
+        <a class="btn btn-ghost" href="#kontakt">Kontaktiere uns</a>
       </div>
   `.trim(),
 
@@ -218,7 +216,7 @@ const DEFAULT_CONTENT = {
         <div class="action-card">
           <h3>Unterschreibe unsere Petition</h3>
           <p>Unterstütze unsere Forderung nach einem tierschutzgerechten Stadttaubenmanagement.</p>
-          <a class="btn btn-ghost" href="#kontakt">Jetzt unterschreiben</a>
+          <button type="button" class="btn btn-ghost open-petition">Jetzt unterschreiben</button>
         </div>
         <div class="action-card">
           <h3>Werde Mitglied</h3>
@@ -363,6 +361,15 @@ async function initSchema() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       edited_at TIMESTAMPTZ,
       edited_by INTEGER REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS petition_signatures (
+      id SERIAL PRIMARY KEY,
+      first_name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      plz TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
 
